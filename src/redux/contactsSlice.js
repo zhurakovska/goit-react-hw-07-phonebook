@@ -1,59 +1,76 @@
 //імпорт функції для створення слайса
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { fetchContactsThunk } from './operations';
 import { deleteContactsThunk, addContactsThunk } from './operations';
+const rejected = (state, { payload }) => {
+  state.contacts.isLoading = false;
+  state.contacts.error = payload;
+};
+const pending = state => {
+  state.contact.isLoading = true;
+  state.contacts.error = 'Something go wrong';
+};
 
 const contactsSlice = createSlice({
   name: 'contacts', // назва слайса для девтулза та внутрішніх речей
 
   //початковий стан слайса
   initialState: {
-    contacts: [],
+    contacts: {
+      items: [],
+      isLoading: false,
+      error: null,
+    },
     filter: '',
   },
   reducers: {
-    // addContact: {
-    //   //в значення (contact) приходить пейлод з компонента - створений новий контакт
-    //   prepare: contact => {
-    //     // prepare це те що потрапляє перед тим як пряходять в редьюсер, бо редьюсер то чиста функція
-    //     // Повертаємо новий доповнений payload
-    //     return {
-    //       // Розширюємо пейлоад будь-якими данними
-    //       payload: { ...contact },
-    //     };
-    //   },
-    //   reducer: (state, action) => {
-    //     // Пушимо в массив новий пейлоад
-    //     state.contacts.push(action.payload);
-    //   },
-    // },
-    // deleteContact: (state, action) => {
-    //   state.contacts = state.contacts.filter(
-    //     contact => contact.id !== action.payload
-    //   );
-    // },
-    filterContacts: (state, action) => {
-      state.filter = action.payload;
+    filterContacts: (state, { payload }) => {
+      state.filter = payload;
     },
   },
 
   extraReducers: builder => {
     builder
       .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
-        state.contacts = payload;
+        state.contacts.items = payload;
+        state.contacts.isLoading = false;
+        state.contacts.error = null;
       })
       .addCase(deleteContactsThunk.fulfilled, (state, { payload }) => {
-        state.contacts = state.contacts.filter(
+        state.contacts.items = state.contacts.items.filter(
           contact => contact.id !== payload
         );
       })
       .addCase(addContactsThunk.fulfilled, (state, { payload }) => {
-        state.contacts.push(payload);
-      });
+        state.contacts.items.push(payload);
+      })
+
+      .addMatcher(
+        isAnyOf(
+          fetchContactsThunk.fulfilled,
+          addContactsThunk.fulfilled,
+          deleteContactsThunk.fulfilled
+        ),
+        state => {
+          state.contacts.isLoading = false;
+        }
+      )
+
+      .addMatcher(
+        isAnyOf(fetchContactsThunk.pending, addContactsThunk.pending),
+        pending
+      )
+      .addMatcher(
+        isAnyOf(
+          fetchContactsThunk.rejected,
+          addContactsThunk.rejected,
+          deleteContactsThunk.rejected
+        ),
+        rejected
+      );
   },
 });
 // Екпортуємо екшени, щоб вони працювали в компонентах при dispatch
-export const { filterContacts, deleteContact, addContact } =
-  contactsSlice.actions;
+export const { filterContacts } = contactsSlice.actions;
 // Eкспортуємо редьюсер для того, щоб додати його в configureStore, котрий в store.js
 export const contactsReducer = contactsSlice.reducer;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { deleteContactsThunk } from 'redux/operations';
+import { selectContacts, selectFilter } from 'redux/selectors';
 
 import {
   ContactList,
@@ -11,8 +12,9 @@ import { useSelector } from 'react-redux';
 
 export const Contacts = () => {
   //Використовуємо useSelector щоб отримати  дані з редакса
-  const contacts = useSelector(state => state.contactList.contacts);
-  const filter = useSelector(state => state.contactList.filter);
+  const contacts = useSelector(selectContacts);
+  console.log(contacts);
+  const filter = useSelector(selectFilter);
   //використовуємо  Діспатч щоб отримати функцию керування редаксом
   const dispatch = useDispatch();
 
@@ -21,6 +23,7 @@ export const Contacts = () => {
   };
 
   const getfilteredContacts = () => {
+    console.log(contacts, '<<<<');
     return contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter.toLowerCase())
     );

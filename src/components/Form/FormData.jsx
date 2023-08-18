@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { addContactsThunk } from 'redux/operations';
+import { selectContacts } from 'redux/selectors';
 
 const INITIAL_STATE = {
   name: '',
@@ -14,7 +15,7 @@ const INITIAL_STATE = {
 export const FormData = () => {
   const [formData, setFormData] = useState(INITIAL_STATE);
   const { name, number } = formData;
-  const contacts = useSelector(state => state.contactList.contacts);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const handleSubmit = e => {
@@ -23,6 +24,7 @@ export const FormData = () => {
     const contactExists = contacts.some(
       existingName => existingName.name.toLowerCase() === name.toLowerCase()
     );
+
     if (contactExists) {
       alert(`${name} is already exist`);
       return;
