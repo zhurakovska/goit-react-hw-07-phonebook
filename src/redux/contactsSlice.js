@@ -7,7 +7,7 @@ const rejected = (state, { payload }) => {
   state.contacts.error = payload;
 };
 const pending = state => {
-  state.contact.isLoading = true;
+  state.contacts.isLoading = true;
   state.contacts.error = 'Something go wrong';
 };
 
