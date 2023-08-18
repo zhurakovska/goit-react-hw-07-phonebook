@@ -1,5 +1,7 @@
 //імпорт функції для створення слайса
 import { createSlice } from '@reduxjs/toolkit';
+import { fetchContactsThunk } from './operations';
+import { deleteContactsThunk, addContactsThunk } from './operations';
 
 const contactsSlice = createSlice({
   name: 'contacts', // назва слайса для девтулза та внутрішніх речей
@@ -10,29 +12,44 @@ const contactsSlice = createSlice({
     filter: '',
   },
   reducers: {
-    addContact: {
-      //в значення (contact) приходить пейлод з компонента - створений новий контакт
-      prepare: contact => {
-        // prepare це те що потрапляє перед тим як пряходять в редьюсер, бо редьюсер то чиста функція
-        // Повертаємо новий доповнений payload
-        return {
-          // Розширюємо пейлоад будь-якими данними
-          payload: { ...contact },
-        };
-      },
-      reducer: (state, action) => {
-        // Пушимо в массив новий пейлоад
-        state.contacts.push(action.payload);
-      },
-    },
-    deleteContact: (state, action) => {
-      state.contacts = state.contacts.filter(
-        contact => contact.id !== action.payload
-      );
-    },
+    // addContact: {
+    //   //в значення (contact) приходить пейлод з компонента - створений новий контакт
+    //   prepare: contact => {
+    //     // prepare це те що потрапляє перед тим як пряходять в редьюсер, бо редьюсер то чиста функція
+    //     // Повертаємо новий доповнений payload
+    //     return {
+    //       // Розширюємо пейлоад будь-якими данними
+    //       payload: { ...contact },
+    //     };
+    //   },
+    //   reducer: (state, action) => {
+    //     // Пушимо в массив новий пейлоад
+    //     state.contacts.push(action.payload);
+    //   },
+    // },
+    // deleteContact: (state, action) => {
+    //   state.contacts = state.contacts.filter(
+    //     contact => contact.id !== action.payload
+    //   );
+    // },
     filterContacts: (state, action) => {
       state.filter = action.payload;
     },
+  },
+
+  extraReducers: builder => {
+    builder
+      .addCase(fetchContactsThunk.fulfilled, (state, { payload }) => {
+        state.contacts = payload;
+      })
+      .addCase(deleteContactsThunk.fulfilled, (state, { payload }) => {
+        state.contacts = state.contacts.filter(
+          contact => contact.id !== payload
+        );
+      })
+      .addCase(addContactsThunk.fulfilled, (state, { payload }) => {
+        state.contacts.push(payload);
+      });
   },
 });
 // Екпортуємо екшени, щоб вони працювали в компонентах при dispatch

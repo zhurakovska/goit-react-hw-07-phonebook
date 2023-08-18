@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { deleteContact } from 'redux/contactsSlice';
+import { deleteContactsThunk } from 'redux/operations';
+
 import {
   ContactList,
   ContactItem,
@@ -16,7 +17,7 @@ export const Contacts = () => {
   const dispatch = useDispatch();
 
   const handleDelete = id => {
-    dispatch(deleteContact(id));
+    dispatch(deleteContactsThunk(id));
   };
 
   const getfilteredContacts = () => {

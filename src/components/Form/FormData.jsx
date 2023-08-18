@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContactsThunk } from 'redux/operations';
 
 const INITIAL_STATE = {
   name: '',
@@ -28,7 +28,7 @@ export const FormData = () => {
       return;
     }
 
-    dispatch(addContact({ name, number, id: nanoid() }));
+    dispatch(addContactsThunk({ name, number, id: nanoid() }));
     setFormData(INITIAL_STATE);
   };
 
