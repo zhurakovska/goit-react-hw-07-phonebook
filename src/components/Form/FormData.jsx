@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Form, Label, Input, Button } from './Form.styled';
-import { nanoid } from 'nanoid';
 
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -30,7 +29,7 @@ export const FormData = () => {
       return;
     }
 
-    dispatch(addContactsThunk({ name, number, id: nanoid() }));
+    dispatch(addContactsThunk({ name, number }));
     setFormData(INITIAL_STATE);
   };
 
